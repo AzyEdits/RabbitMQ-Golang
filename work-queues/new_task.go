@@ -24,7 +24,7 @@ func main() {
 	}
 	defer ch.Close()
 
-	q, err := ch.QueueDeclare("hello", false, false, false, false, nil)
+	q, err := ch.QueueDeclare("task_queue", true, false, false, false, nil)
 
 	if err != nil {
 		panic(errors.Wrap(err, "failed to declare queue"))
