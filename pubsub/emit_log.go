@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"helloworld/broker"
 	"os"
 
 	"github.com/pkg/errors"
@@ -10,19 +11,16 @@ import (
 )
 
 func main() {
-	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672")
+	conn, ch, err := broker.RabbitMQ()
 
 	if err != nil {
-		panic(errors.Wrap(err, "failed to connect to RabbitMQ"))
+		panic(err)
 	}
-	defer conn.Close()
 
-	ch, err := conn.Channel()
-
-	if err != nil {
-		panic(errors.Wrap(err, "failed to get channel"))
-	}
-	defer ch.Close()
+	defer func() {
+		ch.Close()
+		conn.Close()
+	}()
 
 	err = ch.ExchangeDeclare("logs", amqp091.ExchangeFanout, true, false, false, false, nil)
 
